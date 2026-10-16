@@ -1,0 +1,22 @@
+--- a/Sources/Services/NetworkObserverService.swift
++++ b/Sources/Services/NetworkObserverService.swift
+@@ -105,7 +105,18 @@
+                 
+             case .localVPN:
+                 verboseLog("[minimuxer] [net] retrive the first uTun vpn interface info")
+-                if let info = await manager.vpnIface {
++
++                // Explicit reachable override takes precedence even when no candidate
++                // tunnel is discovered. Tailscale utuns carry IPv6 addresses and are
++                // intentionally excluded from candidate discovery, which previously
++                // made a reachable overridePeerIp unreachable here.
++                let earlyOverrideIp = await manager.overridePeerIp
++                let earlyOverrideReachable = await manager.isOverridePeerIpReachable
++                if let op = earlyOverrideIp, !op.isEmpty, earlyOverrideReachable {
++                    verboseLog("[minimuxer] [net] update device IP with effective tunnel peer: 'overridePeer'")
++                    await self.endpoint.update(op)
++                    self.proxyServer.notifyDeviceAttached(tunnelPeerIp: op)
++                } else if let info = await manager.vpnIface {
+                     verboseLog("""
+                     [minimuxer] [net] vpn interface detected
+                       • name: \(info.name)

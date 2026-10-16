@@ -76,6 +76,7 @@ jobs:
           git -C Vendor/SideStore/Dependencies/SideSign apply ../../../../patches/sidesign-audit-fixes.patch
           git -C Vendor/SideStore/Dependencies/minimuxer apply ../../../../patches/minimuxer-audit-fixes.patch
           git -C Vendor/SideStore/Dependencies/minimuxer apply ../../../../patches/minimuxer-ipv4-netmask.patch
+          git -C Vendor/SideStore/Dependencies/minimuxer apply ../../../../patches/minimuxer-tailscale-override.patch
 
       - name: Apply Apple authentication compatibility after audited SideSign fixes
         run: |
